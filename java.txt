@@ -1,0 +1,93 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package snipes;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ *
+ * @author nikitabochan
+ */
+public class SnipesManager {
+
+    String directory;
+    private JSONObject obj;
+
+    public SnipesManager(String directory) {
+        this.directory = directory;
+    }
+
+    public void create(String filename, String productName, String productUrl, String sizes) {
+        obj = new JSONObject();
+        obj.put("productName", productName);
+        obj.put("productUrl", productUrl);
+        obj.put("availableSizes", sizes);
+        System.out.println(obj);
+        try (FileWriter file = new FileWriter(directory + "/" + filename + ".json")) {
+            file.write(obj.toString());
+            System.out.println("Successfully created file [" + filename + ".json]");
+        } catch (Exception e) {
+
+        }
+    }
+
+    public boolean exists(String filename) {
+        try {
+            File f = new File(directory + "/" + filename + ".json");
+            if (f.exists() && !f.isDirectory()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public void updateSizes(String filename, String productName, String productUrl, String sizes) {
+        try {
+            File f = new File(directory + "/" + filename + ".json");
+            if (f.exists()) {
+                f.delete();
+                System.out.println("UPDATING NOW -> " + sizes);
+                create(filename, productName, productUrl, sizes);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getSizes(String filename) {
+        try {
+            File f = new File(directory + "/" + filename + ".json");
+            if (f.exists()) {
+                InputStream is = new FileInputStream(f);
+                String jsonTxt = IOUtils.toString(is, "UTF-8");
+                obj = new JSONObject(jsonTxt);
+                return obj.getString("availableSizes").toString();
+            } else {
+                System.out.println(this.getTime() + " file doesn't exist!");
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String getTime() {
+        String timeStamp = new SimpleDateFormat("HH:mm:ss:SSS").format(new Date());
+        String newTime = "[" + timeStamp + "] [PRODUCTMANAGER]";
+        return newTime;
+    }
+}
