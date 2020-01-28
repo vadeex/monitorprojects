@@ -19,10 +19,10 @@ if __name__ == '__main__':
         # threading.Thread(target=taskNew.task).start()
         #taskBstnUrl = bstnurltask(proxies, bstnWebhook, 2,'https://www.bstn.com/en/p/nike-react-element-55-se-cd2153-100-167370')
         #threading.Thread(target=taskBstnUrl.task).start()
-        new = manager.fileExists('1234')
-        if(new == False):
-            print('Creating new file..')
-            manager.createProduct('1234','43,44,45')
-        manager.setSizes('1234','37')
+        if manager.fileExists('1234'):
+            sizes = manager.getProductSizes('1234')
+            if not sizes:
+                print('empty')
+
     except Exception as e:
         print(e)
